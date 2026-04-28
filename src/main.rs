@@ -67,7 +67,7 @@ use symbol_graph::ScanOutputs;
 use tmpdir::TempDir;
 
 #[derive(Parser, Debug, Clone)]
-#[clap()]
+#[command()]
 struct OuterArgs {
     #[command(subcommand)]
     command: OuterCommand,
@@ -79,100 +79,100 @@ enum OuterCommand {
 }
 
 #[derive(Parser, Debug, Clone, Default)]
-#[clap(version, about)]
+#[command(version, about)]
 struct Args {
     /// Directory containing crate to analyze. Defaults to current working directory.
-    #[clap(long)]
+    #[arg(long)]
     path: Option<PathBuf>,
 
     /// Path to cackle.toml. Defaults to cackle.toml in the directory containing Cargo.toml.
-    #[clap(short, long)]
+    #[arg(short, long)]
     cackle_path: Option<PathBuf>,
 
     /// Print the mapping from paths to crate names. Useful for debugging.
-    #[clap(long, hide = true)]
+    #[arg(long, hide = true)]
     print_path_to_crate_map: bool,
 
     /// Promotes warnings (e.g. due to unused permissions) to errors.
-    #[clap(long)]
+    #[arg(long)]
     fail_on_warnings: bool,
 
     /// Ignore newer config versions.
-    #[clap(long)]
+    #[arg(long)]
     ignore_newer_config_versions: bool,
 
     /// Whether to use coloured output.
-    #[clap(long, alias = "color", default_value = "auto")]
+    #[arg(long, alias = "color", default_value = "auto")]
     colour: colour::Colour,
 
     /// Don't print anything on success.
-    #[clap(long)]
+    #[arg(long)]
     quiet: bool,
 
     /// Override the target used when compiling. e.g. "x86_64-unknown-linux-gnu".
-    #[clap(long)]
+    #[arg(long)]
     target: Option<String>,
 
     /// Override build profile.
-    #[clap(long)]
+    #[arg(long)]
     profile: Option<String>,
 
     /// Features to pass to cargo. Overrides common.features in config.
-    #[clap(long)]
+    #[arg(long)]
     features: Option<String>,
 
     /// Print how long various things take to run.
-    #[clap(long)]
+    #[arg(long)]
     print_timing: bool,
 
     /// Print additional information that's probably only useful for debugging.
-    #[clap(long)]
+    #[arg(long)]
     debug: bool,
 
     /// Output file for logs that might be useful for diagnosing problems.
-    #[clap(long)]
+    #[arg(long)]
     log_file: Option<PathBuf>,
 
     /// How detailed the logs should be.
-    #[clap(long, default_value = "info")]
+    #[arg(long, default_value = "info")]
     log_level: logging::LevelFilter,
 
     /// When specified, writes all requests into a subdirectory of the target directory. For
     /// debugging use.
-    #[clap(long, hide = true)]
+    #[arg(long, hide = true)]
     save_requests: bool,
 
     /// Instead of running `cargo build`, replay requests saved by a previous run where
     /// --write-requests was specified. For debugging use.
-    #[clap(long, hide = true)]
+    #[arg(long, hide = true)]
     replay_requests: bool,
 
     /// Temporary directory for Cackle to use. This is intended for testing purposes.
-    #[clap(long, hide = true)]
+    #[arg(long, hide = true)]
     tmpdir: Option<PathBuf>,
 
     /// What kind of user interface to use.
-    #[clap(long)]
+    #[arg(long)]
     ui: Option<ui::Kind>,
 
     /// Disable interactive UI.
-    #[clap(long, short)]
+    #[arg(long, short)]
     no_ui: bool,
 
     /// Automatically accept the default (first) fix for all problems.
     /// When multiple fixes are available, always applies the most sensible option.
     /// Useful for automated configuration generation.
-    #[clap(long)]
+    #[arg(long)]
     auto_accept_fixes: bool,
 
     /// Disable backtraces (may reduce peak memory consumption).
-    #[clap(long)]
+    #[arg(long)]
     no_backtrace: bool,
 
     // We may at some point allow this to be a short flag, but should probably wait a few releases.
     // -p was previously accepted for --path.
     /// Packages to build and analyse.
-    #[clap(long)]
+    #[arg(long)]
     package: Vec<String>,
 
     #[command(subcommand)]
@@ -190,13 +190,13 @@ enum Command {
     /// Run `cargo run`, analysing whatever gets built.
     Run(CargoOptions),
 
-    #[clap(hide = true, name = PROXY_BIN_ARG)]
+    #[command(hide = true, name = PROXY_BIN_ARG)]
     ProxyBin(ProxyBinOptions),
 }
 
 #[derive(Parser, Debug, Clone)]
 pub(crate) struct ProxyBinOptions {
-    #[clap(allow_hyphen_values = true)]
+    #[arg(allow_hyphen_values = true)]
     remaining: Vec<String>,
 }
 

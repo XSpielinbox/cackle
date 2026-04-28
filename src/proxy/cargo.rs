@@ -10,7 +10,7 @@ pub(crate) const PROFILE_NAME_ENV: &str = "CACKLE_BUILD_PROFILE";
 
 #[derive(Parser, Debug, Clone)]
 pub(crate) struct CargoOptions {
-    #[clap(allow_hyphen_values = true)]
+    #[arg(allow_hyphen_values = true)]
     remaining: Vec<String>,
 }
 
