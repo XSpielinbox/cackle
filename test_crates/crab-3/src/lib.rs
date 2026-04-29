@@ -7,7 +7,7 @@ macro_rules! foo {
 
 #[macro_export]
 macro_rules! macro_that_uses_unsafe {
-    ($a:expr) => {
+    ($a:expr_2021) => {
         let v = $a;
         let mut x = 0_u32;
         if v {
