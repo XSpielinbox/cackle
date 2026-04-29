@@ -38,7 +38,7 @@ fn function_with_custom_attr() -> i32 {
     40
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 fn non_mangled_function() {
     // Make sure we don't miss function references from non-mangled functions.
     println!("{:?}", std::env::var("HOME"));

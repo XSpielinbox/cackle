@@ -16,7 +16,7 @@ pub mod stuff {
         kind = "static",
         modifiers = "-bundle,+whole-archive"
     )]
-    extern "C" {}
+    unsafe extern "C" {}
 
     pub fn do_stuff() {
         let crab_2_env = env!("CRAB_2_ENV");

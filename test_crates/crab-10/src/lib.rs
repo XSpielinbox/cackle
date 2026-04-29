@@ -1,4 +1,4 @@
-extern "C" {
+unsafe extern "C" {
     fn cpp_entry_point() -> i32;
 }
 
