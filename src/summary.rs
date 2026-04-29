@@ -1,9 +1,9 @@
-use crate::config::permissions::PermSel;
 use crate::config::Config;
 use crate::config::PackageConfig;
+use crate::config::permissions::PermSel;
 use crate::crate_index::CrateIndex;
 use clap::{Parser, ValueEnum};
-use fxhash::FxHashMap;
+use rustc_hash::FxHashMap;
 use serde_json::Value;
 use std::collections::BTreeMap;
 use std::collections::HashMap;

@@ -7,8 +7,19 @@ use tempfile::TempDir;
 
 #[test]
 fn integration_test() -> Result<()> {
-    fn run_with_args(tmpdir: &TempDir, args: &[&str], expect_failure: bool) -> Result<String> {
+    fn run_with_args(
+        tmpdir: &TempDir,
+        args: &[&str],
+        expect_failure: bool,
+        env_key: Option<&'static str>,
+        env_val: Option<&'static str>,
+    ) -> Result<String> {
         let mut command = Command::new(cackle_exe());
+        if let Some(key) = env_key
+            && let Some(val) = env_val
+        {
+            command.env(key, val);
+        }
         // Remove cargo and rust-related environment variables. In particular we want to remove
         // variables that cargo sets, but which won't always be set. For example CARGO_PKG_NAME is
         // set by cargo when it invokes rustc, but only when it's compiling a package, not when it
@@ -66,18 +77,24 @@ fn integration_test() -> Result<()> {
 
     let tmpdir = TempDir::new()?;
 
-    run_with_args(&tmpdir, &[], false)?;
+    run_with_args(&tmpdir, &[], false, None, None)?;
 
     // Trigger crab-2 to rebuild its test, but not rerun its build script. This ensures that
     // variables set by the build script survive between runs even if the build script doesn't
     // rerun.
-    std::env::set_var("CRAB_2_EXT_ENV", "1");
-
-    run_with_args(&tmpdir, &["test", "-v"], false)?;
+    run_with_args(
+        &tmpdir,
+        &["test", "-v"],
+        false,
+        Some("CRAB_2_EXT_ENV"),
+        Some("1"),
+    )?;
     let out = run_with_args(
         &tmpdir,
         &["run", "--bin", "c2-bin", "--", "40", "4", "-2"],
         false,
+        None,
+        None,
     )?;
     let out = out.trim();
     let n: i32 = match out.parse() {
@@ -86,7 +103,6 @@ fn integration_test() -> Result<()> {
     };
     assert_eq!(n, 42);
 
-    std::env::set_var("CRAB_9_CRASH_TEST", "1");
     let out = run_with_args(
         &tmpdir,
         &[
@@ -98,6 +114,8 @@ fn integration_test() -> Result<()> {
             "conditional_crash",
         ],
         true,
+        Some("CRAB_9_CRASH_TEST"),
+        Some("1"),
     )?;
     if !out.contains("Deliberate crash") {
         panic!("Test failed, but didn't contain expected message. Output was:\n{out}");

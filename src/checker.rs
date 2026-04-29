@@ -1,8 +1,10 @@
+use crate::Args;
+use crate::CheckState;
 use crate::build_script_checker;
-use crate::config::permissions::PermSel;
-use crate::config::permissions::PermissionScope;
 use crate::config::ApiName;
 use crate::config::Config;
+use crate::config::permissions::PermSel;
+use crate::config::permissions::PermissionScope;
 use crate::crate_index::CrateIndex;
 use crate::crate_index::CrateKind;
 use crate::crate_index::PackageId;
@@ -20,20 +22,18 @@ use crate::proxy::cargo::profile_name;
 use crate::proxy::rpc;
 use crate::proxy::rpc::UnsafeUsage;
 use crate::proxy::subprocess::SubprocessConfig;
-use crate::symbol_graph::backtrace::Backtracer;
 use crate::symbol_graph::NameSource;
 use crate::symbol_graph::UsageDebugData;
+use crate::symbol_graph::backtrace::Backtracer;
 use crate::timing::TimingCollector;
 use crate::tmpdir::TempDir;
-use crate::Args;
-use crate::CheckState;
-use anyhow::anyhow;
-use anyhow::bail;
 use anyhow::Context;
 use anyhow::Result;
-use fxhash::FxHashMap;
-use fxhash::FxHashSet;
+use anyhow::anyhow;
+use anyhow::bail;
 use log::info;
+use rustc_hash::FxHashMap;
+use rustc_hash::FxHashSet;
 use std::borrow::Cow;
 use std::path::Path;
 use std::path::PathBuf;
@@ -413,12 +413,12 @@ impl Checker {
     ) -> Result<()> {
         let api = &api_usage.api_name;
         let perm_sel = api_usage.perm_sel();
-        if let Some(crate_info) = self.crate_infos.get_mut(&perm_sel) {
-            if crate_info.allowed_apis.contains(api) {
-                crate_info.unused_allowed_apis.remove(api);
-                self.mark_parent_allow_apis_used(api, &perm_sel);
-                return Ok(());
-            }
+        if let Some(crate_info) = self.crate_infos.get_mut(&perm_sel)
+            && crate_info.allowed_apis.contains(api)
+        {
+            crate_info.unused_allowed_apis.remove(api);
+            self.mark_parent_allow_apis_used(api, &perm_sel);
+            return Ok(());
         }
 
         // Partition all usages into on-tree and off-tree usages. On-tree are those usages that are
@@ -430,25 +430,24 @@ impl Checker {
         let all_deps = self.crate_index.name_prefix_to_pkg_id();
         if let Some(crate_deps) = self.crate_index.transitive_deps(&api_usage.pkg_id) {
             for usage in &api_usage.usages {
-                if let Some(first_name_part) = usage.to_name.parts.first() {
-                    if !crate_deps.contains(first_name_part) {
-                        if let Some(pkg_id) = all_deps.get(first_name_part) {
-                            // If we detect an off-tree usage where the outer function/variable is
-                            // defined by crate that also defined the restricted API that's being
-                            // accessed, then we ignore it completely.
-                            //
-                            // This can happen if for example a macro defines a variable that is
-                            // then referenced by an inlined function. The macro and the inlined
-                            // function can both be from leaf crates, while the code calling the
-                            // macro is from a higher level crate that provides a restricted API.
-                            // The end effect is that it looks like the inlined function is
-                            // referencing the restricted API.
-                            if !self.is_to_name_from_outer_location(usage)? {
-                                off_tree.entry(pkg_id).or_default().push(usage.clone());
-                            }
-                            continue;
-                        }
+                if let Some(first_name_part) = usage.to_name.parts.first()
+                    && !crate_deps.contains(first_name_part)
+                    && let Some(pkg_id) = all_deps.get(first_name_part)
+                {
+                    // If we detect an off-tree usage where the outer function/variable is
+                    // defined by crate that also defined the restricted API that's being
+                    // accessed, then we ignore it completely.
+                    //
+                    // This can happen if for example a macro defines a variable that is
+                    // then referenced by an inlined function. The macro and the inlined
+                    // function can both be from leaf crates, while the code calling the
+                    // macro is from a higher level crate that provides a restricted API.
+                    // The end effect is that it looks like the inlined function is
+                    // referencing the restricted API.
+                    if !self.is_to_name_from_outer_location(usage)? {
+                        off_tree.entry(pkg_id).or_default().push(usage.clone());
                     }
+                    continue;
                 }
                 on_tree.push(usage.clone());
             }
@@ -566,12 +565,11 @@ impl Checker {
                     continue;
                 }
             }
-            if let Some(api_config) = self.config.raw.apis.get(&p.api) {
-                if api_config.no_auto_detect.contains(&perm_sel.package_name)
-                    || api_config.include.contains(&p.api_path())
-                {
-                    continue;
-                }
+            if let Some(api_config) = self.config.raw.apis.get(&p.api)
+                && (api_config.no_auto_detect.contains(&perm_sel.package_name)
+                    || api_config.include.contains(&p.api_path()))
+            {
+                continue;
             }
             problems.push(Problem::PossibleExportedApi(p.clone()));
         }

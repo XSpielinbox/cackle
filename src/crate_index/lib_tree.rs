@@ -1,11 +1,11 @@
 use super::PackageId;
-use anyhow::anyhow;
-use anyhow::bail;
 use anyhow::Context;
 use anyhow::Result;
+use anyhow::anyhow;
+use anyhow::bail;
 use cargo_metadata::semver::Version;
-use fxhash::FxHashMap;
-use fxhash::FxHashSet;
+use rustc_hash::FxHashMap;
+use rustc_hash::FxHashSet;
 use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;

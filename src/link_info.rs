@@ -1,6 +1,6 @@
 use crate::crate_index::CrateSel;
-use anyhow::bail;
 use anyhow::Result;
+use anyhow::bail;
 use serde::Deserialize;
 use serde::Serialize;
 use std::path::Path;
@@ -50,10 +50,10 @@ impl LinkInfo {
 fn get_output_file() -> Result<Arc<Path>> {
     let mut args = std::env::args();
     while let Some(arg) = args.next() {
-        if arg == "-o" {
-            if let Some(output) = args.next() {
-                return Ok(Arc::from(Path::new(&output)));
-            }
+        if arg == "-o"
+            && let Some(output) = args.next()
+        {
+            return Ok(Arc::from(Path::new(&output)));
         }
     }
     bail!("Failed to find output file in linker command line");

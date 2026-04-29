@@ -2,15 +2,15 @@ use crate::events::AppEvent;
 use crate::outcome::Outcome;
 use crate::problem::Problem;
 use crate::problem::ProblemList;
-use fxhash::FxHashMap;
-use fxhash::FxHashSet;
 use log::info;
+use rustc_hash::FxHashMap;
+use rustc_hash::FxHashSet;
 use std::collections::hash_map::Entry;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
 
 pub(crate) fn create(event_sender: Sender<AppEvent>) -> ProblemStoreRef {
     ProblemStoreRef {
@@ -211,10 +211,10 @@ impl NotificationEntry {
             return;
         }
         self.problem_ids.extend(replacements.iter());
-        if self.problem_ids.is_empty() {
-            if let Some(sender) = self.sender.take() {
-                let _ = sender.send(Outcome::Continue);
-            }
+        if self.problem_ids.is_empty()
+            && let Some(sender) = self.sender.take()
+        {
+            let _ = sender.send(Outcome::Continue);
         }
     }
 }
@@ -248,8 +248,8 @@ mod tests {
     use crate::problem::Problem;
     use crate::problem::ProblemList;
     use crate::problem_store::ProblemId;
-    use std::sync::mpsc::channel;
     use std::sync::mpsc::TryRecvError;
+    use std::sync::mpsc::channel;
 
     fn create_problems() -> ProblemList {
         let mut problems = ProblemList::default();

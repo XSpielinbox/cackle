@@ -5,11 +5,10 @@ use crate::names::DebugName;
 use crate::names::Namespace;
 use crate::names::SymbolAndName;
 use crate::symbol::Symbol;
-use anyhow::anyhow;
-use anyhow::bail;
 use anyhow::Context;
 use anyhow::Result;
-use fxhash::FxHashMap;
+use anyhow::anyhow;
+use anyhow::bail;
 use gimli::Attribute;
 use gimli::AttributeValue;
 use gimli::Dwarf;
@@ -17,6 +16,7 @@ use gimli::EndianSlice;
 use gimli::LittleEndian;
 use gimli::Unit;
 use gimli::UnitOffset;
+use rustc_hash::FxHashMap;
 use std::ffi::OsStr;
 use std::os::unix::prelude::OsStrExt;
 use std::path::Path;
@@ -148,12 +148,11 @@ impl<'input> DwarfScanner<'input> {
                     {
                         self.out.inlined_functions.push(inlined_function);
                     }
-                    if tag == gimli::DW_TAG_subprogram || tag == gimli::DW_TAG_variable {
-                        if let Some((symbol, debug_info)) =
+                    if (tag == gimli::DW_TAG_subprogram || tag == gimli::DW_TAG_variable)
+                        && let Some((symbol, debug_info)) =
                             symbol_scanner.get_debug_info(&unit_state)?
-                        {
-                            self.out.symbol_debug_info.insert(symbol, debug_info);
-                        }
+                    {
+                        self.out.symbol_debug_info.insert(symbol, debug_info);
                     }
                 } else if tag == gimli::DW_TAG_namespace || tag == gimli::DW_TAG_structure_type {
                     namespace = unit_state.scan_namespace(&mut entries, abbrev.attributes())?;
@@ -231,10 +230,10 @@ fn get_subprogram_namespaces(
                 }
             }
             _ => {
-                if abbrev.tag() == gimli::DW_TAG_subprogram {
-                    if let Some(parent_namespace) = stack.last().and_then(|e| e.as_ref()) {
-                        subprogram_namespaces.insert(unit_offset, parent_namespace.clone());
-                    }
+                if abbrev.tag() == gimli::DW_TAG_subprogram
+                    && let Some(parent_namespace) = stack.last().and_then(|e| e.as_ref())
+                {
+                    subprogram_namespaces.insert(unit_offset, parent_namespace.clone());
                 }
                 entries.skip_attributes(abbrev.attributes())?;
             }
@@ -570,14 +569,12 @@ impl<'input> InlinedFunctionScanner<'input> {
                 if let Some(ranges_offset) = unit_state
                     .dwarf
                     .attr_ranges_offset(unit_state.unit, attr.value())?
-                {
-                    if let Some(first_range) = unit_state
+                    && let Some(first_range) = unit_state
                         .dwarf
                         .ranges(unit_state.unit, ranges_offset)?
                         .next()?
-                    {
-                        self.low_pc = Some(first_range.begin);
-                    }
+                {
+                    self.low_pc = Some(first_range.begin);
                 }
             }
             _ => (),
