@@ -18,7 +18,6 @@ pub(crate) fn get_built_ins() -> BTreeMap<ApiName, ApiConfig> {
                 "std::os::wasi::io",
                 "std::os::windows::fs",
                 "std::os::windows::io",
-                "std::path",
             ],
             &[],
         ),
