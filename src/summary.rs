@@ -27,33 +27,33 @@ pub enum OutputFormat {
 #[derive(Parser, Debug, Clone)]
 pub(crate) struct SummaryOptions {
     /// Print summary by package.
-    #[clap(long)]
+    #[arg(long)]
     by_package: bool,
 
     /// Print summary by permission.
-    #[clap(long)]
+    #[arg(long)]
     by_permission: bool,
 
     /// Call out proc macros with other permissions.
-    #[clap(long)]
+    #[arg(long)]
     impure_proc_macros: bool,
 
     /// Print counts.
-    #[clap(long)]
+    #[arg(long)]
     counts: bool,
 
     /// Print all summary kinds. This is the default if no options are specified.
-    #[clap(long)]
+    #[arg(long)]
     full: bool,
 
     /// Whether to print headers for each summary section. This is forced on if more than one
     /// summary is selected.
-    #[clap(long)]
+    #[arg(long)]
     print_headers: bool,
 
     /// The format of the output
-    #[clap(long, value_enum, action)]
-    #[clap(default_value_t = OutputFormat::Human)]
+    #[arg(long, value_enum)]
+    #[arg(default_value_t = OutputFormat::Human)]
     output_format: OutputFormat,
 }
 
