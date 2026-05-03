@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::fs;
 
 pub fn do_something() {}
 
@@ -8,7 +8,7 @@ extern "C" fn before_main() {
     // pre-main activities and with recent versions doing so causes an assertion failure. We can
     // apparently still get away with the environment variable check.
     if std::env::var("FOO").is_ok() {
-        println!("Does / exist?: {:?}", Path::new("/").exists());
+        println!("Does / exist?: {:?}", fs::exists("/").is_ok_and(|exists| exists));
     }
 }
 

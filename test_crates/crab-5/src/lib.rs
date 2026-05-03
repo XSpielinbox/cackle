@@ -2,7 +2,7 @@
 //! problems encountered while checking this crate might show up twice, since the two build.rs files
 //! can be checked in parallel.
 
-use std::path::Path;
+use std::fs;
 use std::sync::atomic::AtomicU8;
 
 pub fn do_something() -> bool {
@@ -10,7 +10,7 @@ pub fn do_something() -> bool {
 }
 
 fn helper() -> bool {
-    let c = || Path::new("/").exists();
+    let c = || fs::exists("/").is_ok();
     c()
 }
 

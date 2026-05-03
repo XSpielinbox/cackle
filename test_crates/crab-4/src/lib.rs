@@ -2,7 +2,7 @@
 //! results from this crate in parallel to crab_1, since neither depends on the other.
 
 use std::ffi::OsString;
-use std::path::Path;
+use std::fs;
 
 pub fn access_file() {
     f1();
@@ -15,19 +15,19 @@ pub fn access_file() {
 }
 
 fn f1() {
-    let _ = Path::new("a.txt").exists();
+    let _ = fs::exists("a.txt");
 }
 
 fn f2() {
-    let _ = Path::new("a.txt").exists();
+    let _ = fs::exists("a.txt");
 }
 
 fn f3() {
-    let _ = Path::new("a.txt").exists();
+    let _ = fs::exists("a.txt");
 }
 
 fn f4() {
-    let _ = Path::new("a.txt").exists();
+    let _ = fs::exists("a.txt");
 }
 
 /// Make sure that we can't circumvent checks by accessing a function via a function pointer instead
