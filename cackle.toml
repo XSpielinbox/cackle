@@ -176,9 +176,6 @@ allow_unsafe = true
 [pkg.serde_json]
 allow_unsafe = true
 
-[pkg.static_assertions]
-allow_unsafe = true
-
 [pkg.parking_lot]
 allow_unsafe = true
 
@@ -204,9 +201,6 @@ allow_unsafe = true
 [pkg.stable_deref_trait]
 allow_unsafe = true
 
-[pkg.byteorder]
-allow_unsafe = true
-
 [pkg.winnow]
 allow_unsafe = true
 
@@ -215,6 +209,8 @@ allow_unsafe = true
 allow_apis = [
     "fs",
     "process",
+    "rustix-other",
+    "termios",
 ]
 
 [pkg.flate2]
@@ -228,9 +224,6 @@ allow_unsafe = true
 
 [pkg.toml_edit]
 allow_unsafe = true
-allow_apis = [
-    "fs",
-]
 
 [pkg.memchr]
 allow_unsafe = true
@@ -238,14 +231,14 @@ allow_unsafe = true
 [pkg.once_cell]
 allow_unsafe = true
 
-[pkg.lazy_static]
-allow_unsafe = true
-
 [pkg.addr2line]
 allow_unsafe = true
 
 [pkg.object]
 allow_unsafe = true
+build.allow_apis = [
+    "process",
+]
 
 [pkg.colored]
 allow_unsafe = true
@@ -280,12 +273,6 @@ allow_apis = [
 [pkg.anstyle-query]
 allow_unsafe = true
 
-[pkg.paste]
-allow_proc_macro = true
-build.allow_apis = [
-    "process",
-]
-
 [pkg.tempfile]
 allow_apis = [
     "fs",
@@ -315,9 +302,6 @@ allow_unsafe = true
 
 [pkg.lru]
 allow_unsafe = true
-
-[pkg.derive_more]
-allow_proc_macro = true
 
 [pkg.foldhash]
 allow_unsafe = true
@@ -352,4 +336,63 @@ build.allow_apis = [
 allow_unsafe = true
 
 [pkg.errno]
+allow_unsafe = true
+
+[pkg.toml_parser]
+allow_unsafe = true
+
+[pkg.toml]
+allow_apis = [
+    "fs",
+]
+
+[pkg.document-features]
+allow_proc_macro = true
+allow_apis = [
+    "fs",
+]
+
+[pkg.wasm-bindgen-macro]
+allow_proc_macro = true
+
+[pkg.instability]
+allow_proc_macro = true
+
+[pkg.num-derive]
+allow_proc_macro = true
+
+[pkg.pest_derive]
+allow_proc_macro = true
+
+[pkg.wezterm-dynamic-derive]
+allow_proc_macro = true
+
+[pkg.phf_macros]
+allow_proc_macro = true
+
+[pkg.darling_macro]
+allow_proc_macro = true
+
+[pkg.derive_more-impl]
+allow_proc_macro = true
+
+[pkg.static_assertions]
+allow_unsafe = true
+
+[pkg.ryu]
+allow_unsafe = true
+
+[pkg.powerfmt]
+allow_unsafe = true
+
+[pkg.castaway]
+allow_unsafe = true
+
+[pkg.deranged]
+allow_unsafe = true
+
+[pkg.compact_str]
+allow_unsafe = true
+
+[pkg.time]
 allow_unsafe = true
